@@ -32,8 +32,7 @@ let groupedByLevel = {};
 
 
 function preload() {
-  table = loadTable("data/BLIBLA.csv", "csv", "header");
-  console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
+  table = loadTable('data/BLIBLA.csv', 'csv', 'header');
     console.log("Columns: ", table.columns);
     console.log("Rows: ", table.rows.length);    
   }
@@ -41,6 +40,15 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+
+  for (let row of table.rows) {
+    console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
+  }
+
+  console.log("Columns: ", table.columns);
+  console.log("Rows: ", table.getRowCount());
+
+  
   textFont("Arial", 10);
   noStroke();
   colorMode(RGB);
