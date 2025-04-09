@@ -90,14 +90,14 @@
 const Slider = {
   sliderX: 0,
   sliderY: 0,
-  sliderWidth: 1350,
-  sliderHeight: 8,
+  sliderWidth: 1465,
+  sliderHeight: 5,
   knobX: 0,
   dragging: false,
 
   setup() {
     this.sliderX = (windowWidth - this.sliderWidth) / 2; // 水平居中
-    this.sliderY = windowHeight - 30; // 滑块位置靠下
+    this.sliderY = windowHeight - 180; // 滑块位置靠下
     this.knobX = this.sliderX; // 滑块初始位置
   },
 
@@ -129,7 +129,7 @@ const Slider = {
 
     // 绘制滑块
     fill(255); // 红色
-    circle(this.knobX, this.sliderY, this.sliderHeight * 1);
+    circle(this.knobX, this.sliderY, this.sliderHeight * 2);
 
     // 显示当前年份
     let currentYear = this.getCurrentYear();
@@ -167,6 +167,7 @@ const Slider = {
   mouseDragged() {
     if (this.dragging) {
       this.knobX = constrain(mouseX, this.sliderX, this.sliderX + this.sliderWidth);
+      console.log("Dragging:", this.knobX);
     }
   },
 

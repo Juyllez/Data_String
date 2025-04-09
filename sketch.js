@@ -145,7 +145,7 @@ function draw() {
   
         let y1 = yPositions[0] + (i + 1) * spacing;
   
-        let y2 = map(score, 0, 1, height - topMargin, topMargin);        
+        let y2 = map(score, 0, 1, (height - topMargin) * 0.8, topMargin);        
         
         let x1 = xLeft + barWidth;
         let x2 = xRight - barWidth;
