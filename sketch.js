@@ -48,11 +48,11 @@ function setup() {
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.getRowCount());
 
-  
+  data = data.filter(entry => entry.year === 1900);
+  console.log("Filtered data:", data);
   textFont("Arial", 10);
   noStroke();
   colorMode(RGB);
-  data = data.filter(entry => entry.year === 2024);
   // 配置颜色
   let palette = [
     color(255, 61, 64),   // Africa
@@ -71,6 +71,7 @@ function setup() {
   }
 
   // 读取数据并分类
+
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
@@ -79,12 +80,14 @@ function setup() {
     if (continents.includes(continent)) {
       let level = getScoreLevel(score);
       let entry = { country, continent, score, level, year };
-      data.push(entry);
       groupedByContinent[continent].push(entry);
       groupedByLevel[level].push(entry);
+      if (year === 2013) {
+        data.push(entry);
+      }
     }
   }
-
+  
   noLoop();
 }
 
@@ -132,7 +135,7 @@ function draw() {
     let yTop = topMargin + i * (levelBarHeight + gap);
 
     // 灰色 Bar
-    fill(255, 255, 255, 180);
+    fill(255, 255, 255);
     rect(xRight - barWidth, yTop, barWidth, levelBarHeight);
 
     // 白色文字标签
@@ -167,8 +170,8 @@ function draw() {
     let x2 = xRight - barWidth;
 
     let lineColor = continentColors[continent];
-    stroke(red(lineColor), green(lineColor), blue(lineColor), 30);
-    strokeWeight(0.1);
+    stroke(lineColor);
+    strokeWeight(1);
     noFill();
     bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
   }
