@@ -27,6 +27,8 @@ let includedCountries = [
 ];
 let groupedByContinent = {};
 
+let selectedYear = 1900;
+
 
 function preload() {
   table = loadTable('data/BLIBLA.csv', 'csv', 'header');
@@ -37,6 +39,8 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+
+  Slider.setup();
 
   for (let row of table.rows) {
     console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
@@ -85,6 +89,10 @@ function setup() {
 function draw() {
   background(0);
 
+  Slider.draw();
+  selectedYear = Slider.getCurrentYear();
+
+
   let xLeft = 120;
   let xRight = width - 120;
   let barWidth = 5;
@@ -93,7 +101,7 @@ function draw() {
   let gap = 4;
 
   // --- 绘制左侧 continent bars ---
-  let totalHeight = height - 2 * topMargin;
+  let totalHeight = (height - 2 * topMargin) *0.8;
   let continentBarHeight = totalHeight / continents.length;
 
   for (let i = 0; i < continents.length; i++) {
@@ -152,3 +160,15 @@ function draw() {
   
 }
 
+
+function mousePressed() {
+  Slider.mousePressed();
+}
+
+function mouseDragged() {
+  Slider.mouseDragged();
+}
+
+function mouseReleased() {
+  Slider.mouseReleased();
+}
