@@ -27,9 +27,6 @@ let includedCountries = [
 ];
 let groupedByContinent = {};
 
-let selectedYear = 1900;
-
-
 function preload() {
   table = loadTable('data/BLIBLA.csv', 'csv', 'header');
     console.log("Columns: ", table.columns);
@@ -68,7 +65,6 @@ function setup() {
 
 
   // 读取数据并分类
-  
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
@@ -77,13 +73,14 @@ function setup() {
     if (continents.includes(continent) && includedCountries.includes(country)) {
       let entry = { country, continent, score, year };
       groupedByContinent[continent].push(entry);
-      if (year === 1900) {
+      if (year === Slider.getCurrentYear()) {
         data.push(entry);
       }
     }
   }
   
-  noLoop();
+  loop()
+  // noLoop();
 }
 
 function draw() {
@@ -91,8 +88,21 @@ function draw() {
 
   Slider.draw();
   selectedYear = Slider.getCurrentYear();
-
-
+  // // 根据年份重新过滤数据
+  data = [];
+  for (let row of table.rows) {
+    let country = row.get("Country");
+    let continent = row.get("Continent");
+    let score = float(row.get("FreedomScore"));
+    let year = int(row.get("Year"));
+    if (continents.includes(continent) && includedCountries.includes(country)) {
+      let entry = { country, continent, score, year };
+      if (year === selectedYear) {
+        data.push(entry);
+      }
+    }
+  }
+  
   let xLeft = 120;
   let xRight = width - 120;
   let barWidth = 5;
@@ -157,6 +167,7 @@ function draw() {
         bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
       }
     }
+    noLoop();
   
 }
 
