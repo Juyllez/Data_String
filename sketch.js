@@ -32,9 +32,9 @@ let groupedByLevel = {};
 
 
 function preload() {
-    table = loadTable("BLIBLA.csv", "csv", "header");
+  table = loadTable("data/BLIBLA.csv", "csv", "header");
     console.log("Columns: ", table.columns);
-    console.log("Rows: ", table.rows.length);
+    console.log("Rows: ", table.rows.length);    
   }
 
 
