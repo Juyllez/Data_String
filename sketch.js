@@ -45,7 +45,6 @@ function setup() {
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.getRowCount());
 
-  // data = data.filter(entry => entry.year === 1900);
   console.log("Filtered data:", data);
   textFont("Arial", 10);
   noStroke();
