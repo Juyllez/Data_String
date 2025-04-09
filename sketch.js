@@ -1,4 +1,3 @@
-let table;
 let continentColors = {};
 let continents = ["Africa", "America", "Asia", "Europe", "Oceania"];
 let scoreLevels = ["0-0.25", "0.25-0.5", "0.5-0.75", "0.75-1"];
@@ -71,13 +70,13 @@ function setup() {
   }
 
   // 读取数据并分类
-
+  
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
     let score = float(row.get("FreedomScore"));
     let year = int(row.get("Year"));
-    if (continents.includes(continent)) {
+    if (continents.includes(continent) && includedCountries.includes(country)) {
       let level = getScoreLevel(score);
       let entry = { country, continent, score, level, year };
       groupedByContinent[continent].push(entry);
@@ -150,31 +149,33 @@ function draw() {
   }
 
   // --- 绘制连接线 ---
-  let continentIndexMap = {};
-  let levelIndexMap = {};
-
-  for (let d of data) {
-    let continent = d.continent;
-    let level = d.level;
-
-    if (!continentIndexMap[continent]) continentIndexMap[continent] = 0;
-    if (!levelIndexMap[level]) levelIndexMap[level] = 0;
-
-    let y1 = continentYMap[continent][continentIndexMap[continent]];
-    let y2 = levelYMap[level][levelIndexMap[level]];
-
-    continentIndexMap[continent]++;
-    levelIndexMap[level]++;
-
-    let x1 = xLeft + barWidth;
-    let x2 = xRight - barWidth;
-
-    let lineColor = continentColors[continent];
-    stroke(lineColor);
-    strokeWeight(1);
-    noFill();
-    bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
-  }
+    // --- 绘制连接线 ---
+    for (let continent of continents) {
+      let continentEntries = data.filter(d => d.continent === continent);
+      let yPositions = continentYMap[continent];
+      let spacing = (yPositions[yPositions.length - 1] - yPositions[0]) / (continentEntries.length + 1);
+      
+      for (let i = 0; i < continentEntries.length; i++) {
+        let d = continentEntries[i];
+        let level = d.level;
+  
+        let y1 = yPositions[0] + (i + 1) * spacing;
+  
+        let levelEntries = groupedByLevel[level];
+        let levelIdx = levelEntries.findIndex(e => e.country === d.country && e.year === d.year);
+        let y2 = levelYMap[level][levelIdx];
+  
+        let x1 = xLeft + barWidth;
+        let x2 = xRight - barWidth;
+  
+        let lineColor = continentColors[continent];
+        stroke(lineColor);
+        strokeWeight(1);
+        noFill();
+        bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
+      }
+    }
+  
 }
 
 function getScoreLevel(score) {
@@ -183,3 +184,5 @@ function getScoreLevel(score) {
   else if (score <= 0.75) return "0.5-0.75";
   else return "0.75-1";
 }
+
+
