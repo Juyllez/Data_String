@@ -33,6 +33,7 @@ let groupedByLevel = {};
 
 function preload() {
   table = loadTable("data/BLIBLA.csv", "csv", "header");
+  console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
     console.log("Columns: ", table.columns);
     console.log("Rows: ", table.rows.length);    
   }
