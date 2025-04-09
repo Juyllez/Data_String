@@ -45,6 +45,7 @@ function setup() {
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.getRowCount());
 
+  // data = data.filter(entry => entry.year === 1900);
   console.log("Filtered data:", data);
   textFont("Arial", 10);
   noStroke();
@@ -73,7 +74,7 @@ function setup() {
     if (continents.includes(continent) && includedCountries.includes(country)) {
       let entry = { country, continent, score, year };
       groupedByContinent[continent].push(entry);
-      if (year === 2024) {
+      if (year === 1900) {
         data.push(entry);
       }
     }
