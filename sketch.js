@@ -104,14 +104,15 @@ function draw() {
   }
   
   let xLeft = 120;
-  let xRight = width - 120;
+  // let xRight = width - 120;
+  let xRight = Slider.knobX; // 动态调整右侧 bar 的 x 坐标
   let barWidth = 5;
   let topMargin = 60;
   let continentYMap = {};
   let gap = 4;
 
   // --- 绘制左侧 continent bars ---
-  let totalHeight = (height - 2 * topMargin) *0.8;
+  let totalHeight = (height - 2 * topMargin) * 0.8;
   let continentBarHeight = totalHeight / continents.length;
 
   for (let i = 0; i < continents.length; i++) {
