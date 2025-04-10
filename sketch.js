@@ -200,10 +200,10 @@ function draw() {
     if (hoveredData) {
       let { x, y, country, year, score } = hoveredData;
   
-      let boxWidth = 160;
+      let boxWidth = 170;
       let boxHeight = 50;
   
-      fill(255, 255, 255, 80); 
+      fill(70, 70, 70, 150); 
       noStroke();
       rect(x + 10, y + 10, boxWidth, boxHeight, 3);
   
