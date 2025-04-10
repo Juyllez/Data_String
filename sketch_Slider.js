@@ -8,14 +8,14 @@ const Slider = {
 
   setup() {
     this.sliderX = (windowWidth - this.sliderWidth) / 2; // 水平居中
-    this.sliderY = windowHeight - 180; // 滑块位置靠下
-    this.knobX = this.sliderX; // 滑块初始位置
+    this.sliderY = windowHeight - 180;
+    this.knobX = this.sliderX;   
   },
 
   draw() {
-    // 绘制 slider 背景
+    //slider 
     noStroke();
-    fill(50); // 灰色
+    fill(50);
     rect(
       this.sliderX,
       this.sliderY - this.sliderHeight / 2,
@@ -24,8 +24,8 @@ const Slider = {
       this.sliderHeight
     );
 
-    // 绘制 slider 进度条
-    fill(255); // 白色
+    // Slider Bar
+    fill(255);
     let progressWidth = this.knobX - this.sliderX;
     rect(
       this.sliderX,
@@ -38,24 +38,23 @@ const Slider = {
       this.sliderHeight
     );
 
-    // 绘制滑块
-    fill(255); // 红色
+    // Slider
+    fill(255); 
     circle(this.knobX, this.sliderY, this.sliderHeight * 2);
 
-    // 显示当前年份
     let currentYear = this.getCurrentYear();
     let labelWidth = 60;
     let labelHeight = 30;
     let labelX = this.knobX - labelWidth / 2;
     let labelY = this.sliderY + 20;
 
-    // 绘制年份框
+    // Jahr Box
     stroke(255); // 白色
     strokeWeight(1);
     noFill();
     rect(labelX, labelY, labelWidth, labelHeight, 3);
 
-    // 绘制年份文本
+    // Jahr
     noStroke();
     fill(255);
     textAlign(CENTER, CENTER);
@@ -64,12 +63,10 @@ const Slider = {
   },
 
   getCurrentYear() {
-    // 根据滑块位置计算年份
     return floor(map(this.knobX, this.sliderX, this.sliderX + this.sliderWidth, 1900, 2024));
   },
 
   mousePressed() {
-    // 检查鼠标是否在滑块上
     if (dist(mouseX, mouseY, this.knobX, this.sliderY) < this.sliderHeight * 2) {
       console.log("Pressed on knob");
       this.dragging = true;

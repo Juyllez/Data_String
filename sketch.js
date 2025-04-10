@@ -108,6 +108,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
 
   Slider.setup();
+  PlayButton.setup();
 
   for (let row of table.rows) {
     console.log(
@@ -161,6 +162,8 @@ function draw() {
   background(0);
 
   Slider.draw();
+  PlayButton.draw();
+
   selectedYear = Slider.getCurrentYear();
   // // 根据年份重新过滤数据
   data = [];
@@ -178,8 +181,8 @@ function draw() {
   }
 
   let xLeft = 120;
-  // let xRight = width - 120;
-  let xRight = Slider.knobX; // 动态调整右侧 bar 的 x 坐标
+  let xRight = width - 120;
+  // let xRight = Slider.knobX; // animation
   let barWidth = 5;
   let topMargin = 60;
   let continentYMap = {};
@@ -195,6 +198,7 @@ function draw() {
     let yTop = topMargin + i * (continentBarHeight + gap);
 
     // 绘制 Bar
+    noStroke();
     fill(continentColors[continent]);
     rect(xLeft, yTop, barWidth, continentBarHeight);
 
@@ -249,7 +253,11 @@ function draw() {
 }
 
 function mousePressed() {
-  Slider.mousePressed();
+  if (PlayButton.isMouseOver()) {
+    PlayButton.toggle();
+  } else {
+    Slider.mousePressed();
+  }
 }
 
 function mouseDragged() {
