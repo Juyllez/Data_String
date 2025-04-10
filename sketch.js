@@ -1,4 +1,5 @@
 let continentColors = {};
+let highlightColors = {};
 let continents = ["Africa", "America", "Asia", "Europe", "Oceania"];
 let data = [];
 
@@ -50,9 +51,21 @@ function setup() {
   console.log("Filtered data:", data);
   textFont("Arial", 10);
   noStroke();
+  
   colorMode(RGB);
-  // 配置颜色
   let palette = [
+    color("hsl(33, 100%, 37%)"), // F29F37 (Africa)
+    color("hsl(282, 100%, 37%)"), // A702F4 (America)
+    color("hsl(193, 100%, 37%)"), // 0401F1 (Asia)
+    color("hsl(340, 96%, 37%)"), // F7045C (Europe)
+    color("hsl(57, 99%, 37%)"), // FEFA06 (Oceania)
+  ];
+  for (let i = 0; i < continents.length; i++) {
+    continentColors[continents[i]] = palette[i];
+    groupedByContinent[continents[i]] = [];
+  }
+  
+  let change = [
     color("hsl(33, 100%, 63%)"), // F29F37 (Africa)
     color("hsl(282, 100%, 50%)"), // A702F4 (America)
     color("hsl(193, 100%, 53%)"), // 0401F1 (Asia)
@@ -60,7 +73,7 @@ function setup() {
     color("hsl(57, 99%, 51%)"), // FEFA06 (Oceania)
   ];
   for (let i = 0; i < continents.length; i++) {
-    continentColors[continents[i]] = palette[i];
+    highlightColors[continents[i]] = change[i];
     groupedByContinent[continents[i]] = [];
   }
 
@@ -132,10 +145,19 @@ function draw() {
     rect(xLeft, yTop, barWidth, continentBarHeight);
 
     // continent name
+    // fill(255);
+    // textAlign(RIGHT, CENTER);
+    // textSize(18);
+    // text(continent, xLeft - 10, yTop + continentBarHeight / 2);
+    push();
+    translate(xLeft - 15, yTop + continentBarHeight / 2); 
+    rotate(-HALF_PI);
     fill(255);
-    textAlign(RIGHT, CENTER);
-    textSize(14);
-    text(continent, xLeft - 10, yTop + continentBarHeight / 2);
+    textAlign(CENTER, CENTER);
+    textFont("Barlow Semi Condensed");
+    textSize(18);
+    text(continent, 0, 0);  
+    pop(); 
 
     // y for line
     let spacing = continentBarHeight / (entries.length + 1);
@@ -152,6 +174,18 @@ function draw() {
     fill(255, 255, 255, alpha);
     rect(xRight - barWidth, topMargin, barWidth, totalHeight);
     
+    // 竖着显示文字
+    push();
+    translate(xRight + 30, topMargin + totalHeight / 2); // 调整位置
+    rotate(-HALF_PI); // 顺时针旋转90度
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textFont("Barlow Semi Condensed");
+    textSize(16);
+    text(`In ${selectedYear}, total score: ${totalScore.toFixed(2)}`, 0, 0);
+    pop();
+
+
     // 1
     fill(255);
     textAlign(CENTER, BOTTOM);
@@ -192,7 +226,7 @@ function draw() {
       }
 
       if (hoveredData && hoveredData.x1 === x1 && hoveredData.y1 === y1 && hoveredData.x2 === x2 && hoveredData.y2 === y2) {
-        stroke(255); 
+        stroke(highlightColors[continent]);
         strokeWeight(2); 
       } else {
         stroke(continentColors[continent]);
@@ -242,23 +276,23 @@ function draw() {
     }
 
     // ranking
-    let rankingX = width - 100; 
-    let rankingY = topMargin; 
-    let lineHeight = 9;
+    // let rankingX = width - 100; 
+    // let rankingY = topMargin; 
+    // let lineHeight = 9;
 
-    let sortedData = [...data].sort((a, b) => b.score - a.score);
+    // let sortedData = [...data].sort((a, b) => b.score - a.score);
 
-    noStroke();
-    fill(255);
-    textAlign(LEFT, TOP);
-    textSize(6);
-    for (let i = 0; i < sortedData.length; i++) {
-      let entry = sortedData[i];
-      let country = entry.country;
-      let score = entry.score.toFixed(2);
+    // noStroke();
+    // fill(255);
+    // textAlign(LEFT, TOP);
+    // textSize(6);
+    // for (let i = 0; i < sortedData.length; i++) {
+    //   let entry = sortedData[i];
+    //   let country = entry.country;
+    //   let score = entry.score.toFixed(2);
 
-      text(`${i + 1}. ${country} (${score})`, rankingX, rankingY + i * lineHeight);
-    }
+    //   text(`${i + 1}. ${country} (${score})`, rankingX, rankingY + i * lineHeight);
+    // }
 
     // noLoop();
   

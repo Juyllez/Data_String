@@ -1,14 +1,14 @@
 const Slider = {
   sliderX: 0,
   sliderY: 0,
-  sliderWidth: 1465,
+  sliderWidth: 1330,
   sliderHeight: 3,
   knobX: 0,
   dragging: false,
 
   setup() {
-    this.sliderX = (windowWidth - this.sliderWidth) / 2; // 水平居中
-    this.sliderY = windowHeight - 180;
+    this.sliderX = (windowWidth - this.sliderWidth) / 2 + 70;
+    this.sliderY = windowHeight - 150;
     this.knobX = this.sliderX;   
   },
 
@@ -46,7 +46,7 @@ const Slider = {
     let labelWidth = 60;
     let labelHeight = 30;
     let labelX = this.knobX - labelWidth / 2;
-    let labelY = this.sliderY + 20;
+    let labelY = this.sliderY - 50;
 
     // Jahr Box
     stroke(255); // 白色
@@ -58,8 +58,21 @@ const Slider = {
     noStroke();
     fill(255);
     textAlign(CENTER, CENTER);
+    textFont("Barlow Semi Condensed");
     textSize(16);
     text(currentYear, this.knobX, labelY + labelHeight / 2);
+
+    // jede 10 Jahre
+    textAlign(CENTER, TOP);
+    textSize(12);
+    textFont("Barlow Semi Condensed");
+
+    fill(200);
+    for (let year = 1900; year <= 2024; year += 10) {
+      let x = map(year, 1900, 2024, this.sliderX, this.sliderX + this.sliderWidth);
+      line(x, this.sliderY - 6, x, this.sliderY + 6);
+      text(year, x, this.sliderY + 8);
+    }
   },
 
   getCurrentYear() {
@@ -68,10 +81,17 @@ const Slider = {
 
   mousePressed() {
     if (dist(mouseX, mouseY, this.knobX, this.sliderY) < this.sliderHeight * 2) {
-      console.log("Pressed on knob");
       this.dragging = true;
+    } else if (
+      mouseX >= this.sliderX &&
+      mouseX <= this.sliderX + this.sliderWidth &&
+      abs(mouseY - this.sliderY) < 10
+    ) {
+      this.knobX = constrain(mouseX, this.sliderX, this.sliderX + this.sliderWidth);
+      loop(); 
     }
   },
+  
 
   mouseDragged() {
     if (this.dragging) {

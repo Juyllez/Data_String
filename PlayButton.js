@@ -3,8 +3,8 @@ const PlayButton = {
     interval: null,
   
     setup() {
-      this.x = windowWidth - 100;
-      this.y = 0;
+      this.x = 120;
+      this.y = windowHeight - 160;
       this.width = 80;
       this.height = 30;
     },
@@ -18,6 +18,8 @@ const PlayButton = {
       fill(this.isPlaying ? 'white' : 'black');
       textAlign(CENTER, CENTER);
       textSize(16);
+      textFont("Barlow Semi Condensed");
+
       text(this.isPlaying ? 'Pause' : 'Play', this.x + this.width / 2, this.y + this.height / 2);
     },
   
