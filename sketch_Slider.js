@@ -2,7 +2,7 @@ const Slider = {
   sliderX: 0,
   sliderY: 0,
   sliderWidth: 1465,
-  sliderHeight: 5,
+  sliderHeight: 3,
   knobX: 0,
   dragging: false,
 
@@ -25,7 +25,7 @@ const Slider = {
     );
 
     // Slider Bar
-    fill(255);
+    fill(160);
     let progressWidth = this.knobX - this.sliderX;
     rect(
       this.sliderX,
@@ -39,7 +39,7 @@ const Slider = {
     );
 
     // Slider
-    fill(255); 
+    fill(160); 
     circle(this.knobX, this.sliderY, this.sliderHeight * 2);
 
     let currentYear = this.getCurrentYear();

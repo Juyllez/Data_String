@@ -151,7 +151,16 @@ function draw() {
 
     fill(255, 255, 255, alpha);
     rect(xRight - barWidth, topMargin, barWidth, totalHeight);
+    
+    // 1
+    fill(255);
+    textAlign(CENTER, BOTTOM);
+    textSize(12);
+    text("1", xRight - barWidth / 2, topMargin - 5);
 
+    // 0
+    textAlign(CENTER, TOP);
+    text("0", xRight - barWidth / 2, topMargin + totalHeight + 5);
 
   // draw line
     hoveredData = null; 
@@ -171,9 +180,25 @@ function draw() {
       let x1 = xLeft + barWidth;
       let x2 = xRight - barWidth;
 
-      let lineColor = continentColors[continent];
-      stroke(lineColor);
-      strokeWeight(1);
+      // test & highlight
+      for (let t = 0; t <= 1; t += 0.05) {
+        let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
+        let by = bezierPoint(y1, y1, y2, y2, t);
+        let d = dist(mouseX, mouseY, bx, by);
+        if (d < 10) { 
+          hoveredData = { x1, y1, x2, y2, lineColor: continentColors[continent], score };
+          break;
+        }
+      }
+
+      if (hoveredData && hoveredData.x1 === x1 && hoveredData.y1 === y1 && hoveredData.x2 === x2 && hoveredData.y2 === y2) {
+        stroke(255); 
+        strokeWeight(2); 
+      } else {
+        stroke(continentColors[continent]);
+        strokeWeight(1); 
+      }
+  
       noFill();
       bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
 
@@ -182,7 +207,7 @@ function draw() {
           let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
           let by = bezierPoint(y1, y1, y2, y2, t);
           let d = dist(mouseX, mouseY, bx, by);
-          if (d < 16) { 
+          if (d < 10) { 
             hoveredData = { 
               x: mouseX, 
               y: mouseY, 
