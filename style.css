@@ -3,7 +3,8 @@ body {
   padding: 0;
   gap: 0; 
   background: #000000;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Barlow Semi Condensed", sans-serif;
+  font-weight: 500;
   color: #fff;
   display: flex;
   flex-direction: column;
