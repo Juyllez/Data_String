@@ -203,6 +203,7 @@ function draw() {
       let boxWidth = 160;
       let boxHeight = 50;
   
+      fill(255, 255, 255, 80); 
       noStroke();
       rect(x + 10, y + 10, boxWidth, boxHeight, 3);
   
