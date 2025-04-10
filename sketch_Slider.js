@@ -1,13 +1,13 @@
 const Slider = {
   sliderX: 0,
   sliderY: 0,
-  sliderWidth: 1330,
+  sliderWidth: 1370,
   sliderHeight: 3,
   knobX: 0,
   dragging: false,
 
   setup() {
-    this.sliderX = (windowWidth - this.sliderWidth) / 2 + 70;
+    this.sliderX = (windowWidth - this.sliderWidth) / 2 + 85;
     this.sliderY = windowHeight - 150;
     this.knobX = this.sliderX;   
   },

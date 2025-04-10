@@ -37,7 +37,7 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
+  
   Slider.setup();
   PlayButton.setup();
 
@@ -123,7 +123,7 @@ function draw() {
   }
 
   let xLeft = 120;
-  let xRight = width - 120;
+  let xRight = width - 80;
   // let xRight = Slider.knobX; // animation
   let barWidth = 5;
   let topMargin = 60;
