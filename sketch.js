@@ -5,104 +5,34 @@ let data = [];
 let countries = [];
 let years = [];
 let includedCountries = [
-  "Sweden",
-  "Norway",
-  "Finland",
-  "Iceland",
-  "Estonia",
-  "Germany",
-  "France",
-  "Netherlands",
-  "Switzerland",
-  "Austria",
-  "Ireland",
-  "Portugal",
-  "Spain",
-  "Poland",
-  "Hungary",
-  "Czechia",
-  "Greece",
-  "Italy",
+    "Sweden", "Norway", "Finland", "Iceland", "Estonia", "Germany", "France",
+  "Netherlands", "Switzerland", "Austria", "Ireland", "Portugal", "Spain", "Poland",
+  "Hungary", "Czechia", "Greece", "Italy",
 
-  "South Africa",
-  "Ghana",
-  "Namibia",
-  "Senegal",
-  "Botswana",
-  "Cape Verde",
-  "Tunisia",
-  "Liberia",
-  "Kenya",
-  "Malawi",
-  "Nigeria",
-  "Sierra Leone",
-  "Zambia",
-  "Ethiopia",
-  "Morocco",
-  "Uganda",
-  "Algeria",
-  "Sudan",
-  "Zimbabwe",
-  "Rwanda",
+  "South Africa", "Ghana", "Namibia", "Senegal", "Botswana", "Cape Verde", "Tunisia",
+  "Liberia", "Kenya", "Malawi", "Nigeria", "Sierra Leone", "Zambia", "Ethiopia",
+  "Morocco", "Uganda", "Algeria", "Sudan", "Zimbabwe", "Rwanda",
 
-  "Japan",
-  "South Korea",
-  "Taiwan",
-  "India",
-  "Philippines",
-  "Indonesia",
-  "Malaysia",
-  "Mongolia",
-  "Thailand",
-  "Nepal",
-  "Bangladesh",
-  "Sri Lanka",
-  "Kazakhstan",
-  "Uzbekistan",
-  "Vietnam",
-  "Myanmar",
-  "Pakistan",
-  "Afghanistan",
-  "Iran",
-  "China",
+  "Japan", "South Korea", "Taiwan", "India", "Philippines", "Indonesia", "Malaysia",
+  "Mongolia", "Thailand", "Nepal", "Bangladesh", "Sri Lanka", "Kazakhstan", "Uzbekistan",
+  "Vietnam", "Myanmar", "Pakistan", "Afghanistan", "Iran", "China",
 
-  "Australia",
-  "New Zealand",
-  "Fiji",
-  "Papua New Guinea",
-  "Solomon Islands",
+  "Australia", "New Zealand", "Fiji", "Papua New Guinea", "Solomon Islands",
   "Vanuatu",
-  "New Caledonia",
-  "Timor",
+  "New Caledonia", "Timor",
 
-  "Canada",
-  "United States",
-  "Mexico",
-  "Cuba",
-  "Haiti",
-  "Dominican Republic",
-  "Jamaica",
-  "Colombia",
-  "Venezuela",
-  "Brazil",
-  "Argentina",
-  "Chile",
-  "Peru",
-  "Ecuador",
-  "Bolivia",
-  "Paraguay",
-  "Uruguay",
-  "Nicaragua",
-  "El Salvador",
-  "Honduras",
+  "Canada", "United States", "Mexico", "Cuba", "Haiti", "Dominican Republic", "Jamaica",
+  "Colombia", "Venezuela", "Brazil", "Argentina", "Chile", "Peru", "Ecuador",
+  "Bolivia", "Paraguay", "Uruguay", "Nicaragua", "El Salvador", "Honduras"
 ];
 let groupedByContinent = {};
 
 function preload() {
-  table = loadTable("data/BLIBLA.csv", "csv", "header");
+  table = loadTable('data/BLIBLA.csv', 'csv', 'header');
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.rows.length);
 }
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -111,12 +41,7 @@ function setup() {
   PlayButton.setup();
 
   for (let row of table.rows) {
-    console.log(
-      row.get("Country"),
-      row.get("Continent"),
-      row.get("FreedomScore"),
-      row.get("Year")
-    );
+    console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
   }
 
   console.log("Columns: ", table.columns);
@@ -139,7 +64,8 @@ function setup() {
     groupedByContinent[continents[i]] = [];
   }
 
-  // 读取数据并分类
+
+  // read data
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
@@ -154,7 +80,7 @@ function setup() {
     }
   }
 
-  loop();
+  loop()
   // noLoop();
 }
 
@@ -164,8 +90,11 @@ function draw() {
   Slider.draw();
   PlayButton.draw();
 
+  hoveredData = null;
+
   selectedYear = Slider.getCurrentYear();
-  // // 根据年份重新过滤数据
+
+  // select data for the selected year
   data = [];
   for (let row of table.rows) {
     let country = row.get("Country");
@@ -188,48 +117,48 @@ function draw() {
   let continentYMap = {};
   let gap = 4;
 
-  // --- 绘制左侧 continent bars ---
+  // continent bars
   let totalHeight = (height - 2 * topMargin) * 0.8;
   let continentBarHeight = totalHeight / continents.length;
 
   for (let i = 0; i < continents.length; i++) {
     let continent = continents[i];
     let entries = groupedByContinent[continent];
-    let yTop = topMargin + i * (continentBarHeight + gap);
+    let yTop = topMargin + i * (continentBarHeight+ gap);
 
-    // 绘制 Bar
+    // continent Bar
     noStroke();
     fill(continentColors[continent]);
     rect(xLeft, yTop, barWidth, continentBarHeight);
 
-    // 白色文字标签
+    // continent name
     fill(255);
     textAlign(RIGHT, CENTER);
     textSize(14);
     text(continent, xLeft - 10, yTop + continentBarHeight / 2);
 
-    // 生成每条线的 y 坐标
+    // y for line
     let spacing = continentBarHeight / (entries.length + 1);
-    continentYMap[continent] = entries.map(
-      (_, idx) => yTop + (idx + 1) * spacing
-    );
+    continentYMap[continent] = entries.map((_, idx) => yTop + (idx + 1) * spacing);
   }
 
-  // --- 绘制右侧 score  bars ---
-  fill(255, 255, 255);
-  rect(xRight - barWidth, topMargin, barWidth, totalHeight);
-  // 白色文字标签
-  fill(255);
-  textAlign(LEFT, CENTER);
-  textSize(14);
+    // score Bar
+    // summe
+    let selectedCountriesData = data.filter(entry => includedCountries.includes(entry.country));
+    let totalScore = selectedCountriesData.reduce((sum, entry) => sum + entry.score, 0);
+    let alpha = map(totalScore, 0, 85, 50, 255);
+    alpha = constrain(alpha, 50, 255);
 
-  // --- 绘制连接线 ---
+    fill(255, 255, 255, alpha);
+    rect(xRight - barWidth, topMargin, barWidth, totalHeight);
+
+
+  // draw line
+    hoveredData = null; 
   for (let continent of continents) {
-    let continentEntries = data.filter((d) => d.continent === continent);
+      let continentEntries = data.filter(d => d.continent === continent);
     let yPositions = continentYMap[continent];
-    let spacing =
-      (yPositions[yPositions.length - 1] - yPositions[0]) /
-      (continentEntries.length + 1);
+      let spacing = (yPositions[yPositions.length - 1] - yPositions[0]) / (continentEntries.length + 1);
 
     for (let i = 0; i < continentEntries.length; i++) {
       let d = continentEntries[i];
@@ -247,10 +176,68 @@ function draw() {
       strokeWeight(1);
       noFill();
       bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
+
+        //test 
+        for (let t = 0; t <= 1; t += 0.05) { 
+          let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
+          let by = bezierPoint(y1, y1, y2, y2, t);
+          let d = dist(mouseX, mouseY, bx, by);
+          if (d < 16) { 
+            hoveredData = { 
+              x: mouseX, 
+              y: mouseY, 
+              country: continentEntries[i].country, 
+              year: continentEntries[i].year, 
+              score: continentEntries[i].score 
+            };            
+            break;
+          }
+        }
+      }
     }
-  }
-  noLoop();
+
+    // info box
+    if (hoveredData) {
+      let { x, y, country, year, score } = hoveredData;
+  
+      let boxWidth = 160;
+      let boxHeight = 50;
+  
+      noStroke();
+      rect(x + 10, y + 10, boxWidth, boxHeight, 3);
+  
+      fill(255);
+      textAlign(LEFT, TOP);
+      textSize(12);
+  
+      text(`Country: ${country}`, x + 15, y + 15);
+      text(`Year: ${year}`, x + 15, y + 30);
+      text(`Score: ${score.toFixed(2)}`, x + 15, y + 45);
+    }
+
+    // ranking
+    let rankingX = width - 100; 
+    let rankingY = topMargin; 
+    let lineHeight = 9;
+
+    let sortedData = [...data].sort((a, b) => b.score - a.score);
+
+    noStroke();
+    fill(255);
+    textAlign(LEFT, TOP);
+    textSize(6);
+    for (let i = 0; i < sortedData.length; i++) {
+      let entry = sortedData[i];
+      let country = entry.country;
+      let score = entry.score.toFixed(2);
+
+      text(`${i + 1}. ${country} (${score})`, rankingX, rankingY + i * lineHeight);
+    }
+
+    // noLoop();
+  
 }
+
 
 function mousePressed() {
   if (PlayButton.isMouseOver()) {
