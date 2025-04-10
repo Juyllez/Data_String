@@ -1,6 +1,5 @@
 let continentColors = {};
 let continents = ["Africa", "America", "Asia", "Europe", "Oceania"];
-let scoreLevels = ["0-0.25", "0.25-0.5", "0.5-0.75", "0.75-1"];
 let data = [];
 
 let countries = [];
@@ -27,8 +26,6 @@ let includedCountries = [
   "Bolivia", "Paraguay", "Uruguay", "Nicaragua", "El Salvador", "Honduras"
 ];
 let groupedByContinent = {};
-let groupedByLevel = {};
-
 
 function preload() {
   table = loadTable('data/BLIBLA.csv', 'csv', 'header');
@@ -40,6 +37,9 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
+  Slider.setup();
+  PlayButton.setup();
+
   for (let row of table.rows) {
     console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
   }
@@ -47,7 +47,6 @@ function setup() {
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.getRowCount());
 
-  data = data.filter(entry => entry.year === 1900);
   console.log("Filtered data:", data);
   textFont("Arial", 10);
   noStroke();
@@ -65,44 +64,58 @@ function setup() {
     groupedByContinent[continents[i]] = [];
   }
 
-  for (let level of scoreLevels) {
-    groupedByLevel[level] = [];
-  }
 
   // 读取数据并分类
-  
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
     let score = float(row.get("FreedomScore"));
     let year = int(row.get("Year"));
     if (continents.includes(continent) && includedCountries.includes(country)) {
-      let level = getScoreLevel(score);
-      let entry = { country, continent, score, level, year };
+      let entry = { country, continent, score, year };
       groupedByContinent[continent].push(entry);
-      groupedByLevel[level].push(entry);
-      if (year === 2013) {
+      if (year === Slider.getCurrentYear()) {
         data.push(entry);
       }
     }
   }
   
-  noLoop();
+  loop()
+  // noLoop();
 }
 
 function draw() {
   background(0);
 
+  Slider.draw();
+  PlayButton.draw();
+
+  selectedYear = Slider.getCurrentYear();
+  // // 根据年份重新过滤数据
+  data = [];
+  for (let row of table.rows) {
+    let country = row.get("Country");
+    let continent = row.get("Continent");
+    let score = float(row.get("FreedomScore"));
+    let year = int(row.get("Year"));
+    if (continents.includes(continent) && includedCountries.includes(country)) {
+      let entry = { country, continent, score, year };
+      if (year === selectedYear) {
+        data.push(entry);
+      }
+    }
+  }
+  
   let xLeft = 120;
-  let xRight = width - 120;
+  // let xRight = width - 120;
+  let xRight = Slider.knobX; // 动态调整右侧 bar 的 x 坐标
   let barWidth = 5;
   let topMargin = 60;
   let continentYMap = {};
-  let levelYMap = {};
   let gap = 4;
 
   // --- 绘制左侧 continent bars ---
-  let totalHeight = height - 2 * topMargin;
+  let totalHeight = (height - 2 * topMargin) * 0.8;
   let continentBarHeight = totalHeight / continents.length;
 
   for (let i = 0; i < continents.length; i++) {
@@ -125,31 +138,16 @@ function draw() {
     continentYMap[continent] = entries.map((_, idx) => yTop + (idx + 1) * spacing);
   }
 
-  // --- 绘制右侧 score level bars ---
-  let levelBarHeight = totalHeight / scoreLevels.length;
-
-  for (let i = 0; i < scoreLevels.length; i++) {
-    let level = scoreLevels[i];
-    let entries = groupedByLevel[level];
-    let yTop = topMargin + i * (levelBarHeight + gap);
-
-    // 灰色 Bar
+  // --- 绘制右侧 score  bars ---
     fill(255, 255, 255);
-    rect(xRight - barWidth, yTop, barWidth, levelBarHeight);
-
+    rect(xRight - barWidth, topMargin, barWidth, totalHeight);
     // 白色文字标签
     fill(255);
     textAlign(LEFT, CENTER);
     textSize(14);
-    text(level, xRight + 10, yTop + levelBarHeight / 2);
-
-    // 生成每条线的 y 坐标
-    let spacing = levelBarHeight / (entries.length + 1);
-    levelYMap[level] = entries.map((_, idx) => yTop + (idx + 1) * spacing);
-  }
+  
 
   // --- 绘制连接线 ---
-    // --- 绘制连接线 ---
     for (let continent of continents) {
       let continentEntries = data.filter(d => d.continent === continent);
       let yPositions = continentYMap[continent];
@@ -157,14 +155,12 @@ function draw() {
       
       for (let i = 0; i < continentEntries.length; i++) {
         let d = continentEntries[i];
-        let level = d.level;
+        let score = d.score;
   
         let y1 = yPositions[0] + (i + 1) * spacing;
   
-        let levelEntries = groupedByLevel[level];
-        let levelIdx = levelEntries.findIndex(e => e.country === d.country && e.year === d.year);
-        let y2 = levelYMap[level][levelIdx];
-  
+        let y2 = map(score, 0, 1, (height - topMargin) * 0.8, topMargin);        
+        
         let x1 = xLeft + barWidth;
         let x2 = xRight - barWidth;
   
@@ -175,14 +171,23 @@ function draw() {
         bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
       }
     }
+    noLoop();
   
 }
 
-function getScoreLevel(score) {
-  if (score <= 0.25) return "0-0.25";
-  else if (score <= 0.5) return "0.25-0.5";
-  else if (score <= 0.75) return "0.5-0.75";
-  else return "0.75-1";
+
+function mousePressed() {
+  if (PlayButton.isMouseOver()) {
+    PlayButton.toggle();
+  } else {
+    Slider.mousePressed();
+  }
 }
 
+function mouseDragged() {
+  Slider.mouseDragged();
+}
 
+function mouseReleased() {
+  Slider.mouseReleased();
+}
