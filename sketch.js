@@ -123,7 +123,6 @@ function draw() {
   // ======= Layoutparameter für Balken und Linien =======
   let xLeft = 120;
   let xRight = width - 80;
-  // let xRight = Slider.knobX; // animation
   let barWidth = 5;
   let topMargin = 60;
   let continentYMap = {};
