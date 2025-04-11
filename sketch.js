@@ -1,8 +1,8 @@
+// ======= Globale Variablen =======
 let continentColors = {};
 let highlightColors = {};
 let continents = ["Africa", "America", "Asia", "Europe", "Oceania"];
 let data = [];
-
 let countries = [];
 let years = [];
 let includedCountries = [
@@ -26,15 +26,17 @@ let includedCountries = [
   "Colombia", "Venezuela", "Brazil", "Argentina", "Chile", "Peru", "Ecuador",
   "Bolivia", "Paraguay", "Uruguay", "Nicaragua", "El Salvador", "Honduras"
 ];
+
 let groupedByContinent = {};
 
+// ======= Daten vorbereiten (CSV laden) =======
 function preload() {
   table = loadTable('data/BLIBLA.csv', 'csv', 'header');
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.rows.length);
 }
 
-
+// ======= Initialisierung der Umgebung =======
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
@@ -44,15 +46,11 @@ function setup() {
   for (let row of table.rows) {
     console.log(row.get("Country"), row.get("Continent"), row.get("FreedomScore"), row.get("Year"));
   }
-
   console.log("Columns: ", table.columns);
   console.log("Rows: ", table.getRowCount());
-
   console.log("Filtered data:", data);
-  textFont("Arial", 10);
-  noStroke();
-  
-  colorMode(RGB);
+
+  // Farben für Kontinente definieren
   let palette = [
     color("hsl(33, 100%, 37%)"), // F29F37 (Africa)
     color("hsl(282, 100%, 37%)"), // A702F4 (America)
@@ -65,6 +63,7 @@ function setup() {
     groupedByContinent[continents[i]] = [];
   }
   
+  // Hervorhebungsfarben definieren
   let change = [
     color("hsl(33, 100%, 63%)"), // F29F37 (Africa)
     color("hsl(282, 100%, 50%)"), // A702F4 (America)
@@ -77,8 +76,7 @@ function setup() {
     groupedByContinent[continents[i]] = [];
   }
 
-
-  // read data
+  // Daten aus Tabelle filtern und strukturieren
   for (let row of table.rows) {
     let country = row.get("Country");
     let continent = row.get("Continent");
@@ -94,9 +92,9 @@ function setup() {
   }
 
   loop()
-  // noLoop();
 }
 
+// ======= Hauptzeichnungsfunktion =======
 function draw() {
   background(0);
 
@@ -107,7 +105,7 @@ function draw() {
 
   selectedYear = Slider.getCurrentYear();
 
-  // select data for the selected year
+  // Daten des ausgewählten Jahres filtern
   data = [];
   for (let row of table.rows) {
     let country = row.get("Country");
@@ -122,6 +120,7 @@ function draw() {
     }
   }
 
+  // ======= Layoutparameter für Balken und Linien =======
   let xLeft = 120;
   let xRight = width - 80;
   // let xRight = Slider.knobX; // animation
@@ -129,26 +128,19 @@ function draw() {
   let topMargin = 60;
   let continentYMap = {};
   let gap = 4;
-
-  // continent bars
   let totalHeight = (height - 2 * topMargin) * 0.8;
   let continentBarHeight = totalHeight / continents.length;
 
+  // ======= Kontinent-Balken zeichnen =======
   for (let i = 0; i < continents.length; i++) {
     let continent = continents[i];
     let entries = groupedByContinent[continent];
     let yTop = topMargin + i * (continentBarHeight+ gap);
-
-    // continent Bar
     noStroke();
     fill(continentColors[continent]);
     rect(xLeft, yTop, barWidth, continentBarHeight);
 
-    // continent name
-    // fill(255);
-    // textAlign(RIGHT, CENTER);
-    // textSize(18);
-    // text(continent, xLeft - 10, yTop + continentBarHeight / 2);
+    // Kontinentname (vertikal)
     push();
     translate(xLeft - 15, yTop + continentBarHeight / 2); 
     rotate(-HALF_PI);
@@ -159,62 +151,55 @@ function draw() {
     text(continent, 0, 0);  
     pop(); 
 
-    // y for line
+    // y-Positionen für Linien berechnen
     let spacing = continentBarHeight / (entries.length + 1);
     continentYMap[continent] = entries.map((_, idx) => yTop + (idx + 1) * spacing);
   }
 
-    // score Bar
-    // summe
-    let selectedCountriesData = data.filter(entry => includedCountries.includes(entry.country));
-    let totalScore = selectedCountriesData.reduce((sum, entry) => sum + entry.score, 0);
-    let alpha = map(totalScore, 0, 85, 50, 255);
-    alpha = constrain(alpha, 50, 255);
-
-    fill(255, 255, 255, alpha);
-    rect(xRight - barWidth, topMargin, barWidth, totalHeight);
+  // ======= Gesamtscore-Balken (rechte Seite) =======
+  let selectedCountriesData = data.filter(entry => includedCountries.includes(entry.country));
+  let totalScore = selectedCountriesData.reduce((sum, entry) => sum + entry.score, 0);
+  let alpha = map(totalScore, 0, 85, 50, 255);
+  alpha = constrain(alpha, 50, 255);
+  fill(255, 255, 255, alpha);
+  rect(xRight - barWidth, topMargin, barWidth, totalHeight);
     
-    // 竖着显示文字
-    push();
-    translate(xRight + 30, topMargin + totalHeight / 2); // 调整位置
-    rotate(-HALF_PI); // 顺时针旋转90度
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textFont("Barlow Semi Condensed");
-    textSize(16);
-    text(`In ${selectedYear}, total score: ${totalScore.toFixed(2)}`, 0, 0);
-    pop();
+  // Score-Anzeige (vertikaler Text)
+  push();
+  translate(xRight + 30, topMargin + totalHeight / 2);
+  rotate(-HALF_PI);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textFont("Barlow Semi Condensed");
+  textSize(16);
+  text(`In ${selectedYear}, total score: ${totalScore.toFixed(2)}`, 0, 0);
+  pop();
+    
+  // Skalenmarkierungen
+  fill(255);
+  textAlign(CENTER, BOTTOM);
+  textSize(12);
+  text("1", xRight - barWidth / 2, topMargin - 5);
+  textAlign(CENTER, TOP);
+  text("0", xRight - barWidth / 2, topMargin + totalHeight + 5);
 
-
-    // 1
-    fill(255);
-    textAlign(CENTER, BOTTOM);
-    textSize(12);
-    text("1", xRight - barWidth / 2, topMargin - 5);
-
-    // 0
-    textAlign(CENTER, TOP);
-    text("0", xRight - barWidth / 2, topMargin + totalHeight + 5);
-
-  // draw line
-    hoveredData = null; 
+  // ======= Linien zwischen Kontinent und Score =======
+  hoveredData = null; 
   for (let continent of continents) {
-      let continentEntries = data.filter(d => d.continent === continent);
+    let continentEntries = data.filter(d => d.continent === continent);
     let yPositions = continentYMap[continent];
-      let spacing = (yPositions[yPositions.length - 1] - yPositions[0]) / (continentEntries.length + 1);
+    let spacing = (yPositions[yPositions.length - 1] - yPositions[0]) / (continentEntries.length + 1);
 
     for (let i = 0; i < continentEntries.length; i++) {
       let d = continentEntries[i];
       let score = d.score;
 
       let y1 = yPositions[0] + (i + 1) * spacing;
-
       let y2 = map(score, 0, 1, (height - topMargin) * 0.8, topMargin);
-
       let x1 = xLeft + barWidth;
       let x2 = xRight - barWidth;
 
-      // test & highlight
+      // Hover-Erkennung 1
       for (let t = 0; t <= 1; t += 0.05) {
         let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
         let by = bezierPoint(y1, y1, y2, y2, t);
@@ -224,7 +209,8 @@ function draw() {
           break;
         }
       }
-
+      
+      // Linie zeichnen
       if (hoveredData && hoveredData.x1 === x1 && hoveredData.y1 === y1 && hoveredData.x2 === x2 && hoveredData.y2 === y2) {
         stroke(highlightColors[continent]);
         strokeWeight(2); 
@@ -236,66 +222,44 @@ function draw() {
       noFill();
       bezier(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
 
-        //test 
-        for (let t = 0; t <= 1; t += 0.05) { 
-          let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
-          let by = bezierPoint(y1, y1, y2, y2, t);
-          let d = dist(mouseX, mouseY, bx, by);
-          if (d < 10) { 
-            hoveredData = { 
-              x: mouseX, 
-              y: mouseY, 
-              country: continentEntries[i].country, 
-              year: continentEntries[i].year, 
-              score: continentEntries[i].score 
-            };            
-            break;
-          }
+      // Hover-Erkennung 2
+      for (let t = 0; t <= 1; t += 0.05) { 
+        let bx = bezierPoint(x1, (x1 + x2) / 2, (x1 + x2) / 2, x2, t);
+        let by = bezierPoint(y1, y1, y2, y2, t);
+        let d = dist(mouseX, mouseY, bx, by);
+        if (d < 10) { 
+          hoveredData = { 
+            x: mouseX, 
+            y: mouseY, 
+            country: continentEntries[i].country, 
+            year: continentEntries[i].year, 
+            score: continentEntries[i].score 
+          };            
+          break;
         }
       }
     }
+  }
 
-    // info box
-    if (hoveredData) {
-      let { x, y, country, year, score } = hoveredData;
+  // info box
+  if (hoveredData) {
+    let { x, y, country, year, score } = hoveredData;
   
-      let boxWidth = 170;
-      let boxHeight = 50;
+    let boxWidth = 170;
+    let boxHeight = 50;
   
-      fill(70, 70, 70, 150); 
-      noStroke();
-      rect(x + 10, y + 10, boxWidth, boxHeight, 3);
+    fill(70, 70, 70, 150); 
+    noStroke();
+    rect(x + 10, y + 10, boxWidth, boxHeight, 3);
   
-      fill(255);
-      textAlign(LEFT, TOP);
-      textSize(12);
+    fill(255);
+    textAlign(LEFT, TOP);
+    textSize(12);
   
-      text(`Country: ${country}`, x + 15, y + 15);
-      text(`Year: ${year}`, x + 15, y + 30);
-      text(`Score: ${score.toFixed(2)}`, x + 15, y + 45);
-    }
-
-    // ranking
-    // let rankingX = width - 100; 
-    // let rankingY = topMargin; 
-    // let lineHeight = 9;
-
-    // let sortedData = [...data].sort((a, b) => b.score - a.score);
-
-    // noStroke();
-    // fill(255);
-    // textAlign(LEFT, TOP);
-    // textSize(6);
-    // for (let i = 0; i < sortedData.length; i++) {
-    //   let entry = sortedData[i];
-    //   let country = entry.country;
-    //   let score = entry.score.toFixed(2);
-
-    //   text(`${i + 1}. ${country} (${score})`, rankingX, rankingY + i * lineHeight);
-    // }
-
-    // noLoop();
-  
+    text(`Country: ${country}`, x + 15, y + 15);
+    text(`Year: ${year}`, x + 15, y + 30);
+    text(`Score: ${score.toFixed(2)}`, x + 15, y + 45);
+  }
 }
 
 
