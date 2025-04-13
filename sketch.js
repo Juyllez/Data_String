@@ -29,6 +29,9 @@ let includedCountries = [
 
 let groupedByContinent = {};
 
+let activeContinents = {};
+
+
 // ======= Daten vorbereiten (CSV laden) =======
 function preload() {
   table = loadTable('data/BLIBLA.csv', 'csv', 'header');
@@ -91,6 +94,10 @@ function setup() {
     }
   }
 
+  for (let continent of continents) {
+    activeContinents[continent] = true;
+  }
+  
   loop()
 }
 
@@ -112,7 +119,8 @@ function draw() {
     let continent = row.get("Continent");
     let score = float(row.get("FreedomScore"));
     let year = int(row.get("Year"));
-    if (continents.includes(continent) && includedCountries.includes(country)) {
+    if (continents.includes(continent) && includedCountries.includes(country) &&
+    activeContinents[continent]) {
       let entry = { country, continent, score, year };
       if (year === selectedYear) {
         data.push(entry);
@@ -136,7 +144,10 @@ function draw() {
     let entries = groupedByContinent[continent];
     let yTop = topMargin + i * (continentBarHeight+ gap);
     noStroke();
-    fill(continentColors[continent]);
+    let barColor = activeContinents[continent]
+    ? continentColors[continent]
+    : color(100);
+    fill(barColor);    
     rect(xLeft, yTop, barWidth, continentBarHeight);
 
     // Kontinentname (vertikal)
@@ -185,6 +196,7 @@ function draw() {
   // ======= Linien zwischen Kontinent und Score =======
   hoveredData = null; 
   for (let continent of continents) {
+    if (!activeContinents[continent]) continue; // Nur aktive Kontinente zeichnen
     let continentEntries = data.filter(d => d.continent === continent);
     let yPositions = continentYMap[continent];
     let spacing = (yPositions[yPositions.length - 1] - yPositions[0]) / (continentEntries.length + 1);
@@ -267,6 +279,24 @@ function mousePressed() {
     PlayButton.toggle();
   } else {
     Slider.mousePressed();
+  }
+
+  let xLeft = 120;
+  let barWidth = 5;
+  let topMargin = 60;
+  let gap = 4;
+  let totalHeight = (height - 2 * topMargin) * 0.8;
+  let continentBarHeight = totalHeight / continents.length;
+
+  for (let i = 0; i < continents.length; i++) {
+    let continent = continents[i];
+    let yTop = topMargin + i * (continentBarHeight + gap);
+
+    if (mouseX >= xLeft && mouseX <= xLeft + barWidth &&
+        mouseY >= yTop && mouseY <= yTop + continentBarHeight) {
+      activeContinents[continent] = !activeContinents[continent];
+      break;
+    }
   }
 }
 
