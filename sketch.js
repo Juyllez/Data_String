@@ -39,6 +39,24 @@ function preload() {
   console.log("Rows: ", table.rows.length);
 }
 
+// ======= Daten filtern =======
+function filterDataByYearAndContinent(year) {
+  let filteredData = [];
+  for (let row of table.rows) {
+    let country = row.get("Country");
+    let continent = row.get("Continent");
+    let score = float(row.get("FreedomScore"));
+    let rowYear = int(row.get("Year"));
+    if (continents.includes(continent) && includedCountries.includes(country) &&
+        activeContinents[continent] && rowYear === year) {
+      let entry = { country, continent, score, year: rowYear };
+      filteredData.push(entry);
+      groupedByContinent[continent].push(entry);
+    }
+  }
+  return filteredData;
+}
+
 // ======= Initialisierung der Umgebung =======
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -79,26 +97,20 @@ function setup() {
     groupedByContinent[continents[i]] = [];
   }
 
-  // Daten aus Tabelle filtern und strukturieren
-  for (let row of table.rows) {
-    let country = row.get("Country");
-    let continent = row.get("Continent");
-    let score = float(row.get("FreedomScore"));
-    let year = int(row.get("Year"));
-    if (continents.includes(continent) && includedCountries.includes(country)) {
-      let entry = { country, continent, score, year };
-      groupedByContinent[continent].push(entry);
-      if (year === Slider.getCurrentYear()) {
-        data.push(entry);
-      }
-    }
+  // 初始化 groupedByContinent
+  for (let continent of continents) {
+    groupedByContinent[continent] = [];
   }
 
+  // 数据过滤
+  data = filterDataByYearAndContinent(Slider.getCurrentYear());
+
+  // 初始化 activeContinents
   for (let continent of continents) {
     activeContinents[continent] = true;
   }
   
-  loop()
+  loop();
 }
 
 // ======= Hauptzeichnungsfunktion =======
@@ -112,21 +124,11 @@ function draw() {
 
   selectedYear = Slider.getCurrentYear();
 
-  // Daten des ausgewählten Jahres filtern
-  data = [];
-  for (let row of table.rows) {
-    let country = row.get("Country");
-    let continent = row.get("Continent");
-    let score = float(row.get("FreedomScore"));
-    let year = int(row.get("Year"));
-    if (continents.includes(continent) && includedCountries.includes(country) &&
-    activeContinents[continent]) {
-      let entry = { country, continent, score, year };
-      if (year === selectedYear) {
-        data.push(entry);
-      }
-    }
+  // 清空 groupedByContinent 并重新过滤数据
+  for (let continent of continents) {
+    groupedByContinent[continent] = [];
   }
+  data = filterDataByYearAndContinent(selectedYear);
 
   // ======= Layoutparameter für Balken und Linien =======
   let xLeft = 120;
